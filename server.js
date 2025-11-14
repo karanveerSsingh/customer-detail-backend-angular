@@ -1,29 +1,29 @@
-
 // server.js
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require('cors');
+const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+require("dotenv").config();
 
 // MongoDB connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/customer-details-db", {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ MongoDB Error:", err));
-  // mongoose
-  // .connect("mongodb+srv://atx-code:c5faguzsQGHtIWOR@atx05.8i3eeh7.mongodb.net/customerdb", {
-  //   useNewUrlParser: true,
-  //   useUnifiedTopology: true,
-  // })
-  // .then(() => console.log("✅ MongoDB Connected"))
-  // .catch((err) => console.log(err));
+// mongoose
+// .connect(process.env.MONGODB_URI_ATLAS, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// })
+// .then(() => console.log("✅ MongoDB Connected"))
+// .catch((err) => console.log(err));
 
 // Model
 const Customer = mongoose.model("Customer", {
@@ -36,6 +36,12 @@ const Customer = mongoose.model("Customer", {
   bankName: String,
   totalFee: Number,
   paidAmount: { type: Number, default: 0 },
+  payments: [
+    {
+      amount: Number,
+      date: { type: Date, default: Date.now },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -83,6 +89,8 @@ app.get("/api/customers/search/:key", async (req, res) => {
       $or: [
         { customerName: { $regex: key, $options: "i" } },
         { vehicleName: { $regex: key, $options: "i" } },
+        { vehicleNumber: { $regex: key, $options: "i" } },
+        { bankName: { $regex: key, $options: "i" } },
       ],
     });
     res.json({ data: customers });
@@ -92,6 +100,22 @@ app.get("/api/customers/search/:key", async (req, res) => {
   }
 });
 
+// app.post("/api/customers/:id/pay", async (req, res) => {
+//   const { amount } = req.body;
+//   try {
+//     const customer = await Customer.findById(req.params.id);
+//     if (!customer) {
+//       return res.status(404).json({ message: "Customer not found" });
+//     }
+//     customer.paidAmount += amount;
+//     await customer.save();
+//     res.json({ data: customer });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Payment failed" });
+//   }
+// });
+
 app.post("/api/customers/:id/pay", async (req, res) => {
   const { amount } = req.body;
   try {
@@ -100,11 +124,27 @@ app.post("/api/customers/:id/pay", async (req, res) => {
       return res.status(404).json({ message: "Customer not found" });
     }
     customer.paidAmount += amount;
+    customer.payments = customer.payments || [];
+    customer.payments.push({ amount, date: new Date() }); // <-- Add this line
     await customer.save();
     res.json({ data: customer });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Payment failed" });
+  }
+});
+
+//payment add history 
+app.get("/api/customers/:id/payments", async (req, res) => {
+  try {
+    const customer = await Customer.findById(req.params.id);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+    res.json({ data: customer.payments || [] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching payment history" });
   }
 });
 
@@ -116,7 +156,7 @@ app.get("/api/customers/count/monthly", async (req, res) => {
 
   try {
     const count = await Customer.countDocuments({
-      createdAt: { $gte: startOfMonth, $lt: endOfMonth }
+      createdAt: { $gte: startOfMonth, $lt: endOfMonth },
     });
     res.json({ count });
   } catch (error) {
@@ -126,8 +166,13 @@ app.get("/api/customers/count/monthly", async (req, res) => {
 });
 
 
-// Start server
-app.listen(3000, '0.0.0.0', () => {
-  console.log('✅ Server running on http://localhost:3000/'); // ✅ Fixed port
-});
 
+
+// Start server
+// app.listen(3000, '0.0.0.0', () => {
+//   console.log('✅ Server running on http://localhost:3000/'); // ✅ Fixed port
+// });
+const PORT = process.env.LISTENPORT || 3000;
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on http://localhost:${PORT}/`);
+});

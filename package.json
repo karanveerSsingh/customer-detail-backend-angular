@@ -1,30 +1,22 @@
 {
-  "name": "customer-detail-backend-angular",
-  "version": "1.0.0",
-  "description": "",
-  "homepage": "https://github.com/karanveerSsingh/customer-detail-backend-angular#readme",
-  "bugs": {
-    "url": "https://github.com/karanveerSsingh/customer-detail-backend-angular/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/karanveerSsingh/customer-detail-backend-angular.git"
-  },
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.19.3",
-    "nodemon": "^3.1.11"
+    "mongoose": "^8.19.2",
+    "nodemon": "^3.1.10"
   },
-  "devDependencies": {}
+  "name": "student-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
