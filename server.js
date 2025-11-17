@@ -16,20 +16,20 @@ app.use(bodyParser.json());
 require("dotenv").config();
 
 // MongoDB connection
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.log("❌ MongoDB Error:", err));
 // mongoose
-// .connect(process.env.MONGODB_URI_ATLAS, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => console.log("✅ MongoDB Connected"))
-// .catch((err) => console.log(err));
+//   .connect(process.env.MONGODB_URI, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("✅ MongoDB Connected"))
+//   .catch((err) => console.log("❌ MongoDB Error:", err));
+mongoose
+.connect(process.env.MONGODB_URI_ATLAS, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB Connected"))
+.catch((err) => console.log(err));
 
 
 // Model
