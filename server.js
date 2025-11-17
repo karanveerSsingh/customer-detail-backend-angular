@@ -25,6 +25,7 @@ mongoose
 // .then(() => console.log("✅ MongoDB Connected"))
 // .catch((err) => console.log(err));
 
+
 // Model
 const Customer = mongoose.model("Customer", {
   customerName: String,
@@ -46,6 +47,12 @@ const Customer = mongoose.model("Customer", {
 });
 
 // CRUD Routes
+
+app.get("/", (req,res)=>{
+  res.send("backend is running")
+});
+
+
 app.get("/api/customers", async (req, res) => {
   const customers = await Customer.find();
   res.json({ data: customers });
